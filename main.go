@@ -8,12 +8,17 @@ import (
 	"github.com/raomuyang/baku/operator"
 )
 
+const (
+	versionInfo = "1.0"
+)
+
 var (
 	src       string
 	dst       string
 	link      bool
 	overwrite bool
 	ignore    string
+	version   bool
 )
 
 func parse() {
@@ -22,12 +27,18 @@ func parse() {
 	flag.BoolVar(&link, "link", false, "create hard link")
 	flag.BoolVar(&overwrite, "overwrite", false, "overwrite the existing files")
 	flag.StringVar(&ignore, "ignore", "", "ignore file(s) by regex pattern")
+	flag.BoolVar(&version, "v", false, "show version info")
 	flag.Parse()
 }
 
 func main() {
 
 	parse()
+
+	if version {
+		fmt.Printf("baku-%s\n", versionInfo)
+		os.Exit(0)
+	}
 
 	if len(src) == 0 || len(dst) == 0 {
 		flag.PrintDefaults()
