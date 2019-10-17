@@ -9,16 +9,17 @@ import (
 )
 
 const (
-	versionInfo = "1.0"
+	versionInfo = "1.1"
 )
 
 var (
-	src       string
-	dst       string
-	link      bool
-	overwrite bool
-	ignore    string
-	version   bool
+	src        string
+	dst        string
+	link       bool
+	overwrite  bool
+	ignore     string
+	version    bool
+	customCopy string // custom copy command
 )
 
 func parse() {
@@ -27,6 +28,7 @@ func parse() {
 	flag.BoolVar(&link, "link", false, "create hard link")
 	flag.BoolVar(&overwrite, "overwrite", false, "overwrite the existing files")
 	flag.StringVar(&ignore, "ignore", "", "ignore file(s) by regex pattern")
+	flag.StringVar(&customCopy, "cmd", "", "custom copy command (optional)")
 	flag.BoolVar(&version, "v", false, "show version info")
 	flag.Parse()
 }
@@ -58,10 +60,19 @@ func main() {
 		options = append(options, ignoreOpt)
 	}
 
-	act := operator.CopyFileAction
-	if link {
+	var act operator.CopyAction
+	fmt.Println("======================")
+	if len(customCopy) != 0 {
+		fmt.Printf("Copy command: %s <src path> <dst path>\n", customCopy)
+		act = operator.GetCustomCopyAction(customCopy)
+	} else if link {
+		fmt.Printf("Copy command: builtin hard link\n")
 		act = operator.CreateLinkAction
+	} else {
+		fmt.Printf("Copy command: builtin copy file\n")
+		act = operator.CopyFileAction
 	}
+	fmt.Printf("======================\n\n")
 
 	expand := func(p string) string {
 		p, err := operator.ExpandUserHome(p)

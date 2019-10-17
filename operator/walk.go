@@ -34,6 +34,7 @@ func CreateLinkAction(oldPath, newPath string, info os.FileInfo) error {
 		return err
 	}
 	if isDir {
+		log.Printf("Operated directory: %s to %s", oldPath, newPath)
 		return nil
 	}
 
@@ -52,6 +53,7 @@ func CopyFileAction(oldPath, newPath string, info os.FileInfo) error {
 		return err
 	}
 	if isDir {
+		log.Printf("Operated directory: %s to %s", oldPath, newPath)
 		return nil
 	}
 	log.Printf("Copy %s to %s\n", oldPath, newPath)

@@ -2,6 +2,7 @@ package operator
 
 import (
 	"fmt"
+	"io/ioutil"
 	"os"
 	"strings"
 	"testing"
@@ -41,4 +42,34 @@ func TestExpandUserHome(t *testing.T) {
 	if !strings.HasSuffix(newPath, "~/123") || strings.HasPrefix(newPath, "~/") {
 		t.Errorf("expand failed: %s", newPath)
 	}
+}
+
+func TestCustomCopyFileAction(t *testing.T) {
+	testFile := ".test_file"
+	err := tmpCreateFile(testFile, "data1")
+	if err != nil {
+		t.Errorf("Failed to create file: %v", err)
+	}
+	defer os.Remove(testFile)
+
+	info, _ := os.Stat(testFile)
+
+	target := testFile + ".copy"
+	defer os.Remove(target)
+
+	err = GetCustomCopyAction("cp")(testFile, target, info)
+	if err != nil {
+		t.Errorf("coyp failed: %v", err)
+	}
+
+	data, err := ioutil.ReadFile(target)
+	if string(data) != "data1" {
+		t.Errorf("unexpected copy value: %s (%v)", data, err)
+	}
+
+	err = GetCustomCopyAction("cp")(testFile, target, info)
+	if err == nil || (err != nil && err.Error() != fileExists) {
+		t.Errorf("copy should be skipped: %v", err)
+	}
+
 }
