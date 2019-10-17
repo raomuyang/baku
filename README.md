@@ -25,4 +25,10 @@ baku -src /path/src -dst /path/to/backup/root/ -overwrite
 baku -src /path/src -dst /path/to/backup/root/ -ignore "\.git"
 ```
 
-> The symbol link of a directory was unsupported now.
+* specify the custom "copy command"
+
+```shell
+baku -src /path/src -dst /path/to/backup/root/ -cmd "cp"
+```
+
+> The symbol link of a directory was unsupported now in builtin functions.
